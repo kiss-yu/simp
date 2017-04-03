@@ -1,0 +1,4 @@
+﻿  Main.cpp
+g:\c语言\simp\simp\simp\main.cpp(12): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“int *”
+g:\c语言\simp\simp\simp\main.cpp(18): warning C4101: “fp”: 未引用的局部变量
+LINK : fatal error LNK1104: 无法打开文件“opencv_ml249d.lib”
