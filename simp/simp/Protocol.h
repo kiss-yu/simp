@@ -3,11 +3,12 @@
 #define ETHERTYPE_IP 0x08 //以太帧携带ip协议
 #define ETHERTYPR_PPPOE_FIND 0x6388 //pppoe发现阶段
 #define ETHERTYPR_PPPOE_SESSION 0x6488 //pppoe会话阶段
-#define MAX_PACK_LEN 65535      //接收的最大IP报文
-#define MAX_HTTP_LEN 10240 //http数据部分最大值
+#define MAX_PACK_LEN 65536      //接收的最大IP报文
+#define MAX_HTTP_LEN 10000 //http数据部分最大值
 #define MAX_PROTO_TEXT_LEN 16  //子协议名称（如"TCP"）最大长度 
 #define MAX_PROTO_NUM 12   //子协议数量
 #define MAX_HOSTNAME_LAN 255  //最大主机名长度
+string HTTP_CONTENT = "";
 typedef struct _protomap    //定义子协议映射表 
 {
 	int ProtoNum;
@@ -23,28 +24,29 @@ typedef struct eth_header
 
 typedef struct _iphdr    //定义IP头部 
 {
-	ETH_HEADER eth_header;//以太帧头
 	unsigned char h_lenver;  //4位首部长度+4位IP版本号  
 	unsigned char tos;    //8位服务类型TOS  
 	unsigned short total_len;  //16位总长度（字节） 
 	unsigned short ident;   //16位标识  
-	unsigned short frag_and_flags;  //3位标志位  
+	unsigned short frag_and_flags;  //3位标志位  + 13位片偏移
 	unsigned char ttl;     //8位生存时间TTL  
 	unsigned char proto;    //8位协议(TCP,UDP或其他）  
 	unsigned short checksum;   //16位IP首部校验和  
-	unsigned int sourceIP;    //32位源IP地址  
-	unsigned int destIP;    //32位目的IP地址
-
+	//unsigned int sourceIP;    //32位源IP地址  
+	//unsigned int destIP;    //32位目的IP地址
+	u_char sourceIP[4];
+	u_char destIP[4];
+	ETH_HEADER * eth_header;//以太帧头
 }IP_HEADER;
 
 typedef struct _pppoe    //定义pppoe帧头部头部 
 {
-	ETH_HEADER eth_header;//以太帧头
 	unsigned char h_lenver;  //4位首部长度+4位IP版本号  //0x11
 	unsigned char code;//pppoe协议code值 //0x09 PADI      0X07 PADO      0X19 PADR      0X65 PADS    0XA7 PADT
 	unsigned short session;//协议附带session值
 	unsigned short length;//表示负载长度，不包括以太头和PPPOE头
 	unsigned char tags[200];//tag内容  占留
+	ETH_HEADER * eth_header;//以太帧头
 }PPPOE_HEADER;
 PROTOMAP pppType[5]{ //pppoe各阶段包名
 	{ 0x09,"PADI" },
@@ -64,52 +66,85 @@ typedef struct _tcphdr     //定义TCP首部
 	USHORT th_win;      //16位窗口大小  
 	USHORT th_sum;      //16位校验和  
 	USHORT th_urp;      //16位紧急数据偏移量
-	char http_content[MAX_HTTP_LEN];//http全部数据
-	IP_HEADER ip_header; //ip帧头
+	//IP_HEADER * ip_header; //ip帧头
 }TCP_HEADER;
 typedef struct _httphdr
 {
-	u_char http_content[MAX_HTTP_LEN];//http全部数据
-	TCP_HEADER tcp_header; //tcp帧头
+	char  http_content[MAX_HTTP_LEN];//http全部数据
+	int len;
+	int contentLen()
+	{
+		return HTTP_CONTENT.length();
+	}
+	boolean isNeedHttpData()
+	{
+		printf("\n======================================================================================\n");
+		for (size_t i = 0; i < MAX_HTTP_LEN; i++)
+		{
+			printf("%c", http_content[i]);
+		}
+		char * _chars = http_content;
+		size_t i = 0;
+		for (; i < MAX_HTTP_LEN; i++)
+		{
+			if ((http_content[i] == 'G' && http_content[i+1] == 'E'&& http_content[i + 2] == 'T'))
+			{
+				_chars = &http_content[i];
+				i = -1;
+				//printf("\n****************************************************************************************************************\n");
+				break;
+			}
+			if ((http_content[i] == 'P'&& http_content[i + 1] == 'O' && http_content[i + 2] == 'S'&&http_content[i + 3] == 'T'))
+			{
+				_chars = &http_content[i];
+				i = -2;
+				printf("\n****************************************************************************************************************\n");
+				break;
+			}
+		}
+		if (i == MAX_HTTP_LEN)
+		{
+			return false;
+		}
+		string str = string(_chars);
+		int end = str.find("\r\n\r\n");
+		int index = i == -1 ? str.find("G", 0): str.find("P", 0);
+		HTTP_CONTENT = "";
+		HTTP_CONTENT = string(_chars, index, end - index);
+		//http_string.append(ss);
+		return true;
+	}
 	string getHost()
 	{
-		string str;
-		strcpy((char*)str.c_str(), (char*)http_content);
-		if (str.find("Host",0) == string::npos)
+		if (HTTP_CONTENT.find("Host",0) == string::npos)
 		{
 			return "host不存在";
 		}
-		return split(str, "Host: ", "\r\n");
+		return split(HTTP_CONTENT, "Host: ", "\r\n");
 	}
 	string getHttpMethod()
 	{
-		string str;
-		strcpy((char*)str.c_str(), (char*)http_content);
-		if (str.find("HTTP",0) == string::npos)
+		if (HTTP_CONTENT.find("Host",0) == string::npos)
 		{
-			return "错误http数据";
+			return "错误方法";
 		}
-		return split(str,"" ," ");
+		return split(HTTP_CONTENT,"" ," ");
 	}
 	string getUrl()
 	{
-		string str;
-		strcpy((char*)str.c_str(), (char*)http_content);
 		if (getHttpMethod() == "错误http数据")
 		{
 			return "url不存在";
 		}
-		return split(str, getHttpMethod()+" ", " ");
+		return split(HTTP_CONTENT, getHttpMethod()+" ", "?| ");
 	}
 	string getMessageMap()
 	{
-		//string str;
-		//strcpy((char*)str.c_str(), (char*)http_content);
 		string method = getHttpMethod();
-		//if (method == "GET")
-		//{
-		//	return getGeturlMessageMap(getUrl());
-		//}
+		if (method == "GET")
+		{
+			return getGeturlMessageMap(HTTP_CONTENT);
+		}
 		//else if (method == "POST")
 		//{
 		//	if (str.find("\r\n\r\n",0) == string::npos)
@@ -117,17 +152,19 @@ typedef struct _httphdr
 		//		return "post无内容";
 		//	}
 		//	return split(str, "\r\n\r\n", "");
-		//}else
-		//{
-			return string("{Method:\"" + method + "\",message:\"暂时不支持解析！！！\"}");
 		//}
+		else
+		{
+			return string("{Method:\"" + method + "\",message:\"暂时不支持解析！！！\"}");
+		}
 	}
 	string toString()
 	{
-		return "method：" + getHttpMethod() + "\n" +
-		"url：http:\\" + getHost() + getUrl() + "\n" +
-		"请求参数：" + getMessageMap(); +"\n";
+		return "\nmethod：" + getHttpMethod() + "\n" +
+		"url：http://" + getHost() + getUrl() + "\n" +
+		"pramaters：\n" + getMessageMap(); +"\n";
 	}
+	//TCP_HEADER  * tcp_header; //tcp帧头
 }HTTP_HEADER;
 typedef struct _udphdr     //定义UDP首部 
 {

@@ -1,12 +1,21 @@
 ﻿  Main.cpp
-g:\c语言\simp\simp\simp\protocol.h(77): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(129): note: 参见“strcpy”的声明
-g:\c语言\simp\simp\simp\protocol.h(87): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(129): note: 参见“strcpy”的声明
-g:\c语言\simp\simp\simp\protocol.h(97): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(129): note: 参见“strcpy”的声明
-g:\c语言\simp\simp\simp\protocol.h(129): warning C4552: “+”: 运算符不起任何作用；应输入带副作用的运算符
-g:\c语言\simp\simp\simp\main.cpp(30): warning C4101: “fp”: 未引用的局部变量
-g:\c语言\simp\simp\simp\main.cpp(53): warning C4715: “caught”: 不是所有的控件路径都返回值
+g:\c语言\simp\simp\simp\protocol.h(77): warning C4267: “return”: 从“size_t”转换到“int”，可能丢失数据
+g:\c语言\simp\simp\simp\protocol.h(110): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+g:\c语言\simp\simp\simp\protocol.h(111): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+g:\c语言\simp\simp\simp\protocol.h(165): warning C4552: “+”: 运算符不起任何作用；应输入带副作用的运算符
+g:\c语言\simp\simp\simp\main.cpp(39): warning C4101: “net”: 未引用的局部变量
+g:\c语言\simp\simp\simp\main.cpp(39): warning C4101: “mask”: 未引用的局部变量
+g:\c语言\simp\simp\simp\main.cpp(84): warning C4101: “header”: 未引用的局部变量
+g:\c语言\simp\simp\simp\main.cpp(83): warning C4101: “packet”: 未引用的局部变量
+g:\c语言\simp\simp\simp\main.cpp(86): warning C4101: “fp”: 未引用的局部变量
+g:\c语言\simp\simp\simp\main.cpp(285): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(90): note: 参见“strcat”的声明
+g:\c语言\simp\simp\simp\main.cpp(298): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(90): note: 参见“strcat”的声明
+g:\c语言\simp\simp\simp\main.cpp(302): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(90): note: 参见“strcat”的声明
+g:\c语言\simp\simp\simp\main.cpp(327): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\stdio.h(1769): note: 参见“sprintf”的声明
+g:\c语言\simp\simp\simp\main.cpp(109): warning C4715: “caught”: 不是所有的控件路径都返回值
   simp.vcxproj -> G:\C语言\simp\simp\x64\Debug\simp.exe
   simp.vcxproj -> G:\C语言\simp\simp\x64\Debug\simp.pdb (Partial PDB)

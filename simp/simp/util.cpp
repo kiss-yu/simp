@@ -8,6 +8,14 @@ string split(string str, string start, string end_str)
 {
 	int index = start == "" ? 0 : str.find(start, 0);
 	int strart_len = start == "" ? 0 : start.length();
+	int end_index;
+	if ((end_index = end_str.find("|",0)) != string::npos)
+	{
+		string one = string(end_str, 0, end_index);
+		string two = string(end_str, end_index + 1, end_str.length() - 1 - end_index);
+		if (str.find(one, index + strart_len) < str.find(two, index + strart_len)) end_str = one;
+		else end_str = two;
+	}
 	int end = end_str == "" ? str.length(): str.find(end_str, (index + strart_len));
 	string data = string(str, index + strart_len, end - index - strart_len);
 	return string(str, index + strart_len, end - index - strart_len);
@@ -24,14 +32,15 @@ string  replaceAll(string str, string replace,string end)
 //获取http get求情方法的参数列表  返回map类型字符串
 string getGeturlMessageMap(string url)
 {
-	string map = "{messge_count:";
-	if (url.find("?",0)==string::npos)
+	string map = "{messge:";
+	int index;
+	if ((index = url.find("?",0))==string::npos)
 	{
-		map += "\"该url没有参数内容！！！\"}";
+		map += "\"no message!!!\"}";
 		return map;
 	}
 	map = "{";
-	return map + replaceAll(string(url, url.find("?", 0) + 1, url.length() - url.find("?", 0)),"&",",")+"}";
+	return map + replaceAll(string(url, index + 1, url.find(" ", index) - index - 1),"&",",")+"}";
 }
 /*
 Base64编码
